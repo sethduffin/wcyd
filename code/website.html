@@ -136,13 +136,11 @@
       }
     });
 
-    // On url change
-    $(window).on('change', function(e){
-      if($(".details-gallery__images-carousel").length) {
-        setTimeout(function(){
-          $(".details-gallery__images-carousel").css("transform","translateX(-120%)")
-        },1000)
-      }
+    // On main change
+    $("#main").bind('DOMSubtreeModified', function () {
+      setTimeout(function(){
+        $(".details-gallery__images-carousel").css("transform","translateX(-120%)")
+      },1000)
     });
   });
 </script>
