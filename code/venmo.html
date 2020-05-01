@@ -1,0 +1,47 @@
+ <style>
+ 	.venmoButton {
+ 		display: flex !important;
+	 	max-width: 368px !important;
+    	width: auto !important;
+	 	height:48px !important;
+	    background-color: #3c94d2 !important;
+	    border-radius: 3px !important;
+	    font-family: 'Proxima Nova' !important;
+	    font-weight: bold !important;
+	    color: white !important;
+	 }
+
+	.venmoButton div {
+		margin: auto !important;
+		font-size: 25px !important;
+	}
+
+	.venmoButton div img {
+		zoom:.13 !important;
+		margin-top: 100px !important;
+	}
+	.venmoButton div div {
+		font-size: 18px !important;
+	}
+	.venmoButton div div .ec-preloader {
+		display: none !important;
+	}
+
+ </style>
+<div class="venmoButton" onclick="(function() {
+	total = document.getElementsByClassName('ec-cart-summary__total')[0].innerHTML
+	total = total.substr(0, total.indexOf('<')).replace('$','')
+	if( /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent)) {
+		alert('Trying to redirect you to Venmo. \nMake sure to come back and complete the order!')
+		window.location = 'venmo://paycharge?txn=pay&recipients=Aspen-Wallin-1&amount='+total+'&note=WCYD ¯\\_(ツ)_/¯';
+		setTimeout(function(){
+			document.getElementsByClassName('venmoButton')[0].childNodes[1].innerHTML = '<div>Venmo $'+total+' to @Aspen-Wallin-1</div>'
+		},100)
+	} else {
+		document.getElementsByClassName('venmoButton')[0].childNodes[1].innerHTML = '<div>Venmo $'+total+' to @Aspen-Wallin-1</div>'
+	}
+})();">
+	<div>
+		Open&nbsp;<img src="https://tane-dv.imgix.net/2019/07/Venmo-Logo-Header-Image.png">
+	<div>
+</div>
