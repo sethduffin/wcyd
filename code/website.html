@@ -100,13 +100,6 @@
       window.localStorage.setItem('seen-alert1', true)
     }
 
-  // Swipe picture
-  function swipePicture() {
-    setTimeout(function(){ 
-      $('.details-gallery__images-control--right').trigger("click")
-    },2000);
-  }
-
   //On ready
   $(document).ready(function() {
 
@@ -143,5 +136,13 @@
       }
     });
 
+    // On url change
+    $(window).on('change', function(e){
+      if($(".details-gallery__images-carousel").length) {
+        setTimeout(function(){
+          $(".details-gallery__images-carousel").css("transform","translateX(-120%)")
+        },1000)
+      }
+    });
   });
 </script>
