@@ -17,7 +17,7 @@
 
 <script type="text/javascript">
 
-  $('head').append('<div class="sd-custom-theme"></div>')
+  $('head').prepend('<div class="sd-custom-theme"></div>')
   $('.sd-custom-theme').load('https://raw.githubusercontent.com/sethduffin/wcyd/master/code/theme.html')
 
   var show_alert = !window.localStorage.getItem('seen-alert1');
@@ -30,9 +30,6 @@
 
   //On ready
   $(document).ready(function() {
-
-    
-
     if( /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent)) {
       $('.cover-title').css('font-size','60px')
     }
