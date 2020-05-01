@@ -139,7 +139,7 @@
     // On HTML modified
     $(document).bind('DOMSubtreeModified', function () {
 
-      $('.grid-product').attr("onClick","swipePicture()")
+      swipePicture()
 
       var message = "Orders will be shipped on Friday, May 15th."
       if(!$("p:contains('"+message+"')").length){
