@@ -138,13 +138,11 @@
 
     // When item viewed
     $( ".grid-product" ).on( "click", function() {
-      
       setTimeout(function(){
-        $([document.documentElement, document.body]).animate({
-            scrollTop: $('.ec-store__product-page').find('h1').offset().top
-        }, 2000);
-      },500);
+        alert('and go')
+        $('.details-gallery__images-control--right').trigger("click")
+      },2000);
     });
-    
+
   });
 </script>
