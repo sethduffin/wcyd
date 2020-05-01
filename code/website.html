@@ -137,10 +137,17 @@
     });
 
     // On main change
+    var scrolled = false
     $("#main").bind('DOMSubtreeModified', function () {
-      setTimeout(function(){
-        $(".details-gallery__images-carousel").css("transform","translateX(-120%)")
-      },1000)
+      elem = $(".details-product-purchase__add-buttons")
+      if(elem.length && !scrolled){
+        $('html, body').animate({
+            scrollTop: elem.offset().top-window.screen.height+100,
+        });
+        scrolled = true
+      } else if(!elem.length) {
+        scrolled = false
+      }
     });
   });
 </script>
