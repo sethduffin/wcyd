@@ -53,7 +53,7 @@
     $(document).bind('DOMSubtreeModified', function () {
       var message = "Orders will be shipped on Friday, May 15th."
       if(!$("p:contains('"+message+"')").length){
-        $("p:contains('Please choose a shipping method:')").parent().append('<p>'+message+'</p>')
+        $("p:contains('Please choose a shipping method:')").after('<p>'+message+'</p>')
       }
     });
 
