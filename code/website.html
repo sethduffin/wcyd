@@ -102,8 +102,7 @@
 
   // Swipe picture
   function swipePicture() {
-    setTimeout(function(){
-      alert('swipe')
+    setTimeout(function(){ 
       $('.details-gallery__images-control--right').trigger("click")
     },2000);
   }
@@ -138,9 +137,6 @@
 
     // On HTML modified
     $(document).bind('DOMSubtreeModified', function () {
-
-      swipePicture()
-
       var message = "Orders will be shipped on Friday, May 15th."
       if(!$("p:contains('"+message+"')").length){
         $("p:contains('Please choose a shipping method:')").parent().append('<p>'+message+'</p>')
