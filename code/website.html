@@ -137,14 +137,14 @@
     });
 
     // When item viewed
-    $('grid-product').click(function() {
+    $( ".grid-product" ).on( "click", function() {
+      
       setTimeout(function(){
-        alert('yuhh')
-        // $([document.documentElement, document.body]).animate({
-        //     scrollTop: $("#elementtoScrollToID").offset().top
-        // }, 2000);
-      },500)
+        $([document.documentElement, document.body]).animate({
+            scrollTop: $('.ec-store__product-page').find('h1').offset().top
+        }, 2000);
+      },500);
     });
-
+    
   });
 </script>
