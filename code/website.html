@@ -137,17 +137,19 @@
     });
 
     // On main change
-    var scrolled = false
-    $("#main").bind('DOMSubtreeModified', function () {
-      elem = $(".details-product-purchase__add-buttons")
-      if(elem.length && !scrolled){
-        $('html, body').animate({
-            scrollTop: elem.offset().top-window.screen.height+100,
-        });
-        scrolled = true
-      } else if(!elem.length) {
-        scrolled = false
-      }
-    });
+    if window.screen.width <= 500 {
+      var scrolled = false
+      $("#main").bind('DOMSubtreeModified', function () {
+        elem = $(".details-product-purchase__add-buttons")
+        if(elem.length && !scrolled){
+          $('html, body').animate({
+              scrollTop: elem.offset().top-window.screen.height+100,
+          });
+          scrolled = true
+        } else if(!elem.length) {
+          scrolled = false
+        }
+      });
+    }
   });
 </script>
