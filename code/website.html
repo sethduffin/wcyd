@@ -138,18 +138,20 @@
 
     // On main change
     if (window.screen.width <= 500) {
-      var scrolled = false
-      $("#main").bind('DOMSubtreeModified', function () {
-        elem = $(".details-product-purchase__add-buttons")
-        if(elem.length && !scrolled){
-          $('html, body').animate({
-              scrollTop: elem.offset().top-window.screen.height+120,
-          });
-          scrolled = true
-        } else if(!elem.length) {
-          scrolled = false
-        }
-      });
+      setTimeout(function(){
+        var scrolled = false
+        $("#main").bind('DOMSubtreeModified', function () {
+          elem = $(".details-product-purchase__add-buttons")
+          if(elem.length && !scrolled){
+            $('html, body').animate({
+                scrollTop: elem.offset().top-window.screen.height+150,
+            },500);
+            scrolled = true
+          } else if(!elem.length) {
+            scrolled = false
+          }
+        });
+      },500)
     }
   });
 </script>
