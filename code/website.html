@@ -28,7 +28,8 @@
   //On ready
   $(document).ready(function() {
 
-    $('head').append('<link rel="stylesheet" type="text/css" href="https://raw.githubusercontent.com/sethduffin/wcyd/master/code/theme.css">')
+    $('head').append('<div class="sd-custom-theme"></div>')
+    $('.sd-custom-theme').load('https://raw.githubusercontent.com/sethduffin/wcyd/master/code/theme.html')
 
     if( /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent)) {
       $('.cover-title').css('font-size','50px')
