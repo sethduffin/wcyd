@@ -137,7 +137,7 @@
     });
 
     // On main change
-    if window.screen.width <= 500 {
+    if (window.screen.width <= 500) {
       var scrolled = false
       $("#main").bind('DOMSubtreeModified', function () {
         elem = $(".details-product-purchase__add-buttons")
