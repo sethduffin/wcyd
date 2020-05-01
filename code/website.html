@@ -16,81 +16,6 @@
 <title>WCYD</title>
 
 <script type="text/javascript">
-  var stylesheet = (`
-    <style>
-      .cover__title {
-          margin-bottom: -5px !important;
-          font-size: 5.4vw !important;
-      }
-
-      .border{
-        display:none;
-      }
-
-      .author {
-        display:none;
-      }
-
-      .store{
-        margin-bottom:20px;
-      }
-
-      .cover__container{
-        padding-bottom:0px !important;
-      }
-
-      .owner{
-        text-align:center;
-      }
-
-      .search-icon {
-          display: none;
-      }
-     
-      .alertContainer{
-        width:100%;
-        top:-100px;
-        position: fixed;
-        z-index: 45;
-        display: flex;
-        justify-content: center;
-      }
-
-      .alert {
-        padding: 20px;
-        margin:20px;
-        background-color: #b4cce4;
-        border-radius: 50px;
-        color: black;
-        font-family: 'Proxima Nova';
-        width:315px;
-        display: flex;
-        flex-direction: row;
-        text-align: center;
-      }
-
-      .closebtn {
-        margin: auto;
-        margin-right:0;
-        color: black;
-        font-weight: bold;
-        font-size: 22px;
-        cursor: pointer;
-        transition: 0.3s;
-        line-height: 80%;
-        padding-top: 4px;
-      }
-
-      .closebtn:hover {
-        color: white;
-      }
-
-      .footer{
-        display: none;
-      }
-
-    </style>
-  `);
 
   var show_alert = !window.localStorage.getItem('seen-alert1');
 
@@ -103,7 +28,7 @@
   //On ready
   $(document).ready(function() {
 
-    $('body').append(stylesheet)
+    $('head').append('<link rel="stylesheet" type="text/css" href="https://raw.githubusercontent.com/sethduffin/wcyd/master/code/theme.css">')
 
     if( /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent)) {
       $('.cover-title').css('font-size','50px')
