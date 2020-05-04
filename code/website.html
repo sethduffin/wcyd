@@ -39,6 +39,10 @@
       </div>
     `)
 
+    try {
+      $('.ecwid-maintenance-message > span').text("Oh no! We just missed you. We are currently not selling any items at the moment. Check back soon as we are always updating our website :)")
+    }
+
     setTimeout(function(){
       $('.alertContainer').animate({
         top:["0px","swing"]

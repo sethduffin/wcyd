@@ -27,7 +27,19 @@
 		display: none !important;
 	}
 
+	.messageDiv {
+		max-width: 368px !important;
+	    background-color: #cceada !important;
+	    border-radius: 3px !important;
+	    padding: 12px !important;
+	    margin-bottom: 20px !important;
+	    margin-top: 16px !important;
+	}
+
  </style>
+ <div class="messageDiv">
+ 	<p style="margin-bottom: 0px !important">Click the button below <br/>or Venmo <strong>@Aspen-Wallin-1</strong> the total<strong><span class="sd-total"></span></strong>. <br/>Make sure you come back and complete the order!</p>
+ </div>
 <div class="venmoButton" onclick="(function() {
 	total = document.getElementsByClassName('ec-cart-summary__total')[0].innerHTML
 	total = total.substr(0, total.indexOf('<')).replace('$','')
@@ -42,6 +54,16 @@
 	}
 })();">
 	<div>
-		Open&nbsp;<img src="https://tane-dv.imgix.net/2019/07/Venmo-Logo-Header-Image.png">
+		Open&nbsp;<img src="https://tane-dv.imgix.net/2019/07/Venmo-Logo-Header-Image.png" onload="(function() {
+			var sd_total = document.getElementsByClassName('ec-cart-summary__total')[0].innerHTML
+			sd_total = sd_total.substr(0, sd_total.indexOf('<'))
+		 	if (sd_total){
+		 		setTimeout(function(){
+		 			document.getElementsByClassName('sd-total')[0].innerHTML = ' ('+sd_total+')'
+		 		},10)
+		 	}
+		 	console.log(sd_total)
+		 })();">
 	<div>
 </div>
+<!-- Hey man -->
