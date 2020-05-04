@@ -55,8 +55,11 @@
       if(!$("p:contains('"+message+"')").length){
         $("p:contains('Please choose a shipping method:')").after('<p>'+message+'</p>')
       }
+      var closed_message = "Oh no! We just missed you. We are currently not selling any items at the moment. Check back soon as we are always updating our website :)"
       if ($('.ecwid-maintenance-message > span').length) {
-        $('.ecwid-maintenance-message > span').text("Oh no! We just missed you. We are currently not selling any items at the moment. Check back soon as we are always updating our website :)")
+        if ($('.ecwid-maintenance-message > span').text() != closed_message){ 
+          $('.ecwid-maintenance-message > span').text(closed_message)
+        }
       }
     });
 
