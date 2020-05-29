@@ -20,7 +20,7 @@
   $('head').prepend('<div class="sd-custom-theme"></div>')
   $('.sd-custom-theme').load('https://raw.githubusercontent.com/sethduffin/wcyd/master/code/theme.html')
 
-  var show_alert = !window.localStorage.getItem('seen-alert1');
+  var show_alert = false;  //!window.localStorage.getItem('seen-alert1');
 
   // Define Close alert
   function closeAlert() {
