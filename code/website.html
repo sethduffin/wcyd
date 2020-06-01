@@ -28,6 +28,18 @@
       window.localStorage.setItem('seen-alert1', true)
     }
 
+  //On load
+  $(window).on('load', function(){
+    setTimeout(function(){
+      $('html, body').animate({
+          scrollTop: $(".cover__footer").offset().top-30,
+      },1500);
+      $('.cover__footer').animate({
+          opacity:0,
+      },1500);
+    },1000)
+  });
+
   //On ready
   $(document).ready(function() {
     alertContainer = (`
@@ -38,15 +50,6 @@
         </div>
       </div>
     `)
-
-    setTimeout(function(){
-      $('html, body').animate({
-          scrollTop: $(".cover__footer").offset().top-30,
-      },1500);
-      $('.cover__footer').animate({
-          opacity:0,
-      },1500);
-    },1000)
 
     setTimeout(function(){
       $('.alertContainer').animate({
