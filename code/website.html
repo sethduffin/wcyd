@@ -30,6 +30,7 @@
 
   //On ready
   $(document).ready(function() {
+    first 
     alertContainer = (`
       <div class="alertContainer" onClick="closeAlert()">
         <div class="alert">
@@ -38,6 +39,15 @@
         </div>
       </div>
     `)
+
+    setTimeout(function(){
+      $('html, body').animate({
+          scrollTop: $(".cover__footer").offset().top-30,
+      },1500);
+      $('.cover__footer').animate({
+          opacity:0,
+      },1500);
+    },1000)
 
     setTimeout(function(){
       $('.alertContainer').animate({
@@ -67,21 +77,21 @@
     },1000)
 
     // On main change
-    if (window.screen.width <= 500) {
-      setTimeout(function(){
-        var scrolled = false
-        $("#main").bind('DOMSubtreeModified', function () {
-          elem = $(".details-product-purchase__add-buttons")
-          if(elem.length && !scrolled){
-            $('html, body').animate({
-                scrollTop: elem.offset().top-window.screen.height+150,
-            },500);
-            scrolled = true
-          } else if(!elem.length) {
-            scrolled = false
-          }
-        });
-      },500)
-    }
+    // if (window.screen.width <= 500) {
+    //   setTimeout(function(){
+    //     var scrolled = false
+    //     $("#main").bind('DOMSubtreeModified', function () {
+    //       elem = $(".details-product-purchase__add-to-bag")
+    //       if(elem.length && !scrolled){
+    //         $('html, body').animate({
+    //             scrollTop: elem.prop("scrollHeight"),
+    //         },500);
+    //         scrolled = true
+    //       } else if(!elem.length) {
+    //         scrolled = false
+    //       }
+    //     });
+    //   },500)
+    // }
   });
 </script>
