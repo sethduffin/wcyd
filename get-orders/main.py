@@ -32,8 +32,8 @@ def error(e="Unkown",pause=True):
 	quit()
 
 class Order:
-	def __init__(self,index): 
-		orders.append(self)
+	def __init__(self): 
+		pass
 
 
 def run():
@@ -50,6 +50,8 @@ def get_orders(count):
 	try:
 		done = False
 		index = 0
+		if local.start_order:
+			index = local.start_order-1
 		while not done:
 			num = index+1
 			if num <= count:
@@ -67,20 +69,23 @@ def get_orders(count):
 					error("Couldn't get order #%s" % (num))
 
 
-				Order(index)
-				order = orders[index]
+				order = Order()
+				orders.append(order)
 				
 				order.number = '=HYPERLINK("https://my.ecwid.com/store/28113010#order:id=%s&return=orders","%s")' % (num,num)
 				order.date = driver.find("class","order-details__date").text
 				order.customer = driver.find("id","1W").text
-				s = driver.find("class","order-details__shipping")
-				order.address = "%s %s, %s, %s, %s" % (
-					s.find("class","ecwid-Person-street").text,
-					s.find("class","ecwid-Person-city").text,
-					s.find("class","ecwid-Person-state").text,
-					s.find("class","ecwid-Person-zipcode").text,
-					s.find("class","ecwid-Person-country").text,
-					)
+				order.email = driver.find("id","rG").text
+				order.phone = driver.find("id","7Q").text
+				
+				p = driver.find('id','aJ').find("class","ecwid-Person").find("tag","div")
+				order.address1 = p[1].text
+				order.city = p[2].text.split(',')[0]
+				s = p[2].text.split(',')[1].split(' ')
+				order.state = s[1]
+				order.zip = s[2]
+				order.country = p[3].text
+
 				order.delivery = driver.find("class","order-details__shipping").find("tag","strong").find("class","gwt-InlineLabel")[0].text
 				if order.delivery == "Cache Valley Deliver":
 					order.delivery = "CVD"
@@ -129,15 +134,32 @@ def get_products():
 
 def write_csv():
 	try:
-		row1 = ["Info","","","","","","Cost","","",""]
+		row1 = ["","Info","","","","","","","","","","","Cost","","",""]
 		for product in all_products:
 			row1 += [product,"","","",""]
-		row2 = ["#","Date","Customer","Address","Delivery","Payment","Items","Shipping","Tax","Total"]
+		row2 = ["#","Date","Customer","Email","Phone","Address 1","City","State","Zip","Country","Delivery","Payment","Items","Shipping","Tax","Total"]
 		for product in all_products:
 			row2 += ["S","M","L","XL","XXL"]
 		rows = [row1,row2]
 		for order in orders:
-			the_order = [order.number,order.date,order.customer,order.address,order.delivery,order.payment,order.item_total,order.shipping_total,order.tax_total,order.total]
+			the_order = [
+				order.number,
+				order.date,
+				order.customer,
+				order.email,
+				"\'"+order.phone,
+				order.address1,
+				order.city,
+				order.state,
+				order.zip,
+				order.country,
+				order.delivery,
+				order.payment,
+				order.item_total,
+				order.shipping_total,
+				order.tax_total,
+				order.total
+			]
 			for product in all_products:
 				if product in order.products:
 					the_order.append(order.products[product]["S"])
@@ -160,11 +182,16 @@ def write_csv():
 		for i,label in enumerate(row2,1):
 			if i == 3:
 				totals.append("Totals")
-			elif i <= 5:
+			elif i <= 12:
 				totals.append("")
 			else:
-				letter = string.ascii_uppercase[i-1] 
-				totals.append("=SUM(%s3:%s%s)" %(letter,letter,len(orders)+2))
+				if i > 26:
+					letter = "A"+string.ascii_uppercase[i-27] 
+				else:
+					letter = string.ascii_uppercase[i-1]
+				formula = 'SUM(%s3:%s%s)' % (letter,letter,len(orders)+2)
+				totals.append('=IF(%s<>0,%s,"")' % (formula,formula))
+				
 				
 		rows.append(totals)
 

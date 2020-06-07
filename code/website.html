@@ -63,7 +63,7 @@
 
     // On HTML modified
     $(document).bind('DOMSubtreeModified', function () {
-      var message = "Orders will be shipped on Friday, May 15th."
+      var message = "Orders will be shipped on Friday, June 19th."
       if(!$("p:contains('"+message+"')").length){
         $("p:contains('Please choose a shipping method:')").after('<p>'+message+'</p>')
       }
