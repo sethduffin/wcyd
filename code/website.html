@@ -52,16 +52,21 @@
       var value = labeledItems[key]
       var label = (`
       <div class="grid-product__label">
-        <div id="seth-label" class="ec-label label--attention" style="background-color:`+labelColor+`;">
+        <div id="seth-label" class="ec-label label--attention" style="background-color:`+labelColor+`;z-index:10;">
           <div class="label__text">`+value+`</div>
         </div>
       </div>
     `)
+
       var labelContainer = document.evaluate('//div[text()="'+key+'"]', document, null, XPathResult.FIRST_ORDERED_NODE_TYPE, null).singleNodeValue.parentElement.parentElement.getElementsByClassName('grid-product__image-wrap')[0]
+      var oldLabel = document.evaluate('//div[text()="'+key+'"]', document, null, XPathResult.FIRST_ORDERED_NODE_TYPE, null).singleNodeValue.parentElement.parentElement.getElementsByClassName('grid-product__image-wrap')[0].getElementsByClassName('grid-product__label')[0]
+
+      oldLabel.remove()
       labelContainer.insertAdjacentHTML( 'afterbegin', label );
     }
   }
 
+  labelItems()
 
   //On ready
   $(document).ready(function() {
