@@ -52,7 +52,7 @@
       var value = labeledItems[key]
       var label = (`
       <div class="grid-product__label">
-        <div class="ec-label label--attention" style="background-color:`+labelColor+`;">
+        <div id="seth-label" class="ec-label label--attention" style="background-color:`+labelColor+`;">
           <div class="label__text">`+value+`</div>
         </div>
       </div>
@@ -74,8 +74,6 @@
       </div>
     `)
 
-    labelItems()
-
     setTimeout(function(){
       $('.alertContainer').animate({
         top:["0px","swing"]
@@ -93,6 +91,10 @@
         $("p:contains('Please choose a shipping method:')").after('<p>'+message+'</p>')
       }
     });
+
+      if !document.getElementById('seth-label') {
+        labeledItems()
+      }
 
     setTimeout(function(){
       var closed_message = "Oh no! We just missed you. We are currently not selling any items at the moment. Check back soon as we are always updating our website :)"
