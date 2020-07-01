@@ -59,9 +59,15 @@
     `)
 
       var labelContainer = document.evaluate('//div[text()="'+key+'"]', document, null, XPathResult.FIRST_ORDERED_NODE_TYPE, null).singleNodeValue.parentElement.parentElement.getElementsByClassName('grid-product__image-wrap')[0]
-      var oldLabel = document.evaluate('//div[text()="'+key+'"]', document, null, XPathResult.FIRST_ORDERED_NODE_TYPE, null).singleNodeValue.parentElement.parentElement.getElementsByClassName('grid-product__image-wrap')[0].getElementsByClassName('grid-product__label')[0]
+    
+      try {
+        var oldLabel = document.evaluate('//div[text()="'+key+'"]', document, null, XPathResult.FIRST_ORDERED_NODE_TYPE, null).singleNodeValue.parentElement.parentElement.getElementsByClassName('grid-product__image-wrap')[0].getElementsByClassName('grid-product__label')[0]
 
-      oldLabel.remove()
+        oldLabel.remove()
+      } catch(e) {
+        null
+      }
+    
       labelContainer.insertAdjacentHTML( 'afterbegin', label );
     }
   }
