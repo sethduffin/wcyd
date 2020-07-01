@@ -72,8 +72,6 @@
     }
   }
 
-  labelItems()
-
   //On ready
   $(document).ready(function() {
     alertContainer = (`
@@ -85,7 +83,9 @@
       </div>
     `)
 
-    labelItems()
+    setTimeout(function(){
+      labelItems()
+    },100)
 
     setTimeout(function(){
       $('.alertContainer').animate({
