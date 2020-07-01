@@ -48,10 +48,11 @@
   var labelColor = '#55a0d6'
 
   function labelItems() {
-    for (const [key, value] of Object.entries(labelItems)) {
+    for (var key in labeledItems) {
+      var value = labeledItems[key]
       var label = (`
       <div class="grid-product__label">
-        <div class="ec-label label--attention" style="background-color:'`+labelColor+`';">
+        <div class="ec-label label--attention" style="background-color:`+labelColor+`;">
           <div class="label__text">`+value+`</div>
         </div>
       </div>
@@ -61,6 +62,7 @@
     }
   }
 
+  labelItems()
 
 
   //On ready
