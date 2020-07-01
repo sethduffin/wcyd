@@ -58,7 +58,6 @@
     `)
       var labelContainer = document.evaluate('//div[text()="'+key+'"]', document, null, XPathResult.FIRST_ORDERED_NODE_TYPE, null).singleNodeValue.parentElement.parentElement.getElementsByClassName('grid-product__image-wrap')[0]
       labelContainer.insertAdjacentHTML( 'afterbegin', label );
-      return labelContainer
     }
   }
 
