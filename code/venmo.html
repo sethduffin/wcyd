@@ -1,6 +1,6 @@
  <style>
  	.venmoButton {
- 		display: flex !important;
+ 		display: none !important;
 	 	max-width: 368px !important;
     	width: auto !important;
 	 	height:48px !important;
@@ -9,6 +9,7 @@
 	    font-family: 'Proxima Nova' !important;
 	    font-weight: bold !important;
 	    color: white !important;
+
 	 }
 
 	.venmoButton div {
@@ -38,7 +39,7 @@
 
  </style>
  <div class="messageDiv">
- 	<p style="margin-bottom: 0px !important">Click the button below <br/>or Venmo <strong>@Aspen-Wallin-1</strong> the total<strong><span class="sd-total"></span></strong>. <br/>Make sure you come back and complete the order!</p>
+ 	<p style="margin-bottom: 0px !important"><span class="button-message"></span>Venmo <strong>@Aspen-Wallin-1</strong> the total<strong><span class="sd-total"></span></strong>. <br/>Make sure you come back and complete the order!</p>
  </div>
 <div class="venmoButton" onclick="(function() {
 	total = document.getElementsByClassName('ec-cart-summary__total')[0].innerHTML
@@ -60,9 +61,12 @@
 		 	if (sd_total){
 		 		setTimeout(function(){
 		 			document.getElementsByClassName('sd-total')[0].innerHTML = ' ('+sd_total+')'
+		 			if(/Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent)) {
+		 				document.getElementsByClassName('venmoButton')[0].style = 'display: flex !important;';
+		 				document.getElementsByClassName('button-message')[0].innerHTML = 'Click the button below <br/>or ';
+		 			}
 		 		},10)
 		 	}
-		 	console.log(sd_total)
 		 })();">
 	<div>
 </div>

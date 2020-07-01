@@ -40,6 +40,29 @@
     },600)
   });
 
+  var labeledItems = {
+    'WCYD Statement Hoodie': 'New Colors',
+    'WCYD Badge Hoodie': 'New Colors',
+  }
+
+  var labelColor = '#55a0d6'
+
+  function labelItems() {
+    var label = (`
+      <div class="grid-product__label">
+        <div class="ec-label label--attention" style="background-color:'`+labelColor+`';">
+          <div class="label__text">Sold out</div>
+        </div>
+      </div>
+    `)
+    for (const [key, value] of Object.entries(labelItems)) {
+      var labelContainer = document.evaluate('//div[text()="'+key+'"]', document, null, XPathResult.FIRST_ORDERED_NODE_TYPE, null).singleNodeValue.parentElement.parentElement.getElementsByClassName('grid-product__image-wrap')[0]
+      labelContainer.insertAdjacentHTML( 'afterbegin', label );
+    }
+  }
+
+
+
   //On ready
   $(document).ready(function() {
     alertContainer = (`

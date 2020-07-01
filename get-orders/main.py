@@ -11,7 +11,24 @@ driver.implicitly_wait(3)
 extensions.set_driver(driver,action)
 
 orders = []
-all_products = []
+all_products = local.products
+
+size_product = {
+	"S":"",
+	"M":"",
+	"L":"",
+	"XL":"",
+	"XXL":"",
+}
+
+default_product = {
+	" ":"",
+}
+
+color_size_product = {
+	"Black": size_product.copy(),
+	"Grey": size_product.copy(),
+}
 
 def signal_handler(sig, frame):
     error("Manual Exit",False)
@@ -42,7 +59,20 @@ def run():
 	driver.find("name","password")[0].send(local.password)
 	driver.find("id","SIF.sIB").click()
 	time.sleep(6)
-	order_count = int(driver.find("class","order__number",True)[0].text)
+
+	order_count = 0
+
+	wait = 0
+	while wait < 5:
+		key = driver.find("class","order__number",True)
+		if len(key) > 0:
+			order_count = int(driver.find("class","order__number",True)[0].text)
+			break
+		time.sleep(.1)
+		wait += 0.1
+	else:
+		error("Couldn't get order count")
+
 	get_orders(order_count)
 	write_csv()
 
@@ -107,40 +137,77 @@ def get_orders(count):
 
 def get_products():
 	try:
-		Product = {
-			"S":"",
-			"M":"",
-			"L":"",
-			"XL":"",
-			"XXL":""
-		}
 		products = {}
 		for web_product in driver.find("class","order-details-products-list__product",True):
-			class product:
-				name = web_product.find("class","order-details-product__name").text.replace("WCYD ","")
-				size = web_product.find("text~","Size:").up().find("class","product-attribute__value").text
+
+			name = web_product.find("class","order-details-product__name").text.replace("WCYD ","")
+
+			if name in all_products.keys():
+				product_type = all_products[name]
+				products[name] = eval(product_type+'.copy()')
+				
 				quantity = web_product.find("class","product-cost__multiplier").text
-			if not product.name in all_products:
-				all_products.append(product.name)
-			if not product.name in products.keys():
-				products[product.name] = Product.copy()
-			if product.quantity:
-				products[product.name][product.size] = product.quantity
+				if not quantity: 
+					quantity = '1'
+
+				if product_type == 'default_product':
+					products[name][' '] = quantity
+
+				elif product_type == 'size_product':
+					size = web_product.find("text~","Size:").up().find("class","product-attribute__value").text
+					products[name][size] = quantity
+
+				elif product_type == 'color_size_product':
+					color = web_product.find("text~","Color:").up().find("class","product-attribute__value").text
+					size = web_product.find("text~","Size:").up().find("class","product-attribute__value").text
+					products[name][color][size] = quantity
+
+				else:
+					error('Invalid product type specified: '+name)
+
 			else:
-				products[product.name][product.size] = "1"
+				error("Product not specified: "+name)
+
 		return products
 	except Exception as e:
 		error(e)
 
+def get_nested_types(rows,value):
+	blank_row = list(map(lambda i: "", range(16)))
+
+	if isinstance(value, dict):
+		product_type = value
+		row = blank_row + product_type.keys()
+		rows.append(row)
+
+		for key, value in product_type.items():
+			get_nested_types(rows,value)
+
+def get_nested_values(the_order,key_value):
+	if isinstance(key_value, dict):
+		product_type = key_value
+		for key, value in product_type.items():
+			get_nested_values(the_order,product_type[key])
+	else:
+		the_order.append(key_value)
+
 def write_csv():
 	try:
 		row1 = ["","Info","","","","","","","","","","","Cost","","",""]
-		for product in all_products:
-			row1 += [product,"","","",""]
 		row2 = ["#","Date","Customer","Email","Phone","Address 1","City","State","Zip","Country","Delivery","Payment","Items","Shipping","Tax","Total"]
-		for product in all_products:
-			row2 += ["S","M","L","XL","XXL"]
 		rows = [row1,row2]
+
+		for product, product_type in all_products.items():
+			list1 = []
+			list2 = []
+			for key,value in eval(product_type+'.items()'):				
+				get_nested_values(list1,value)
+				list2.append(key)
+				get_nested_types(rows,value)
+			list1[0] = product
+			rows[0] += list1
+			rows[1] += list2
+		
 		for order in orders:
 			the_order = [
 				order.number,
@@ -160,19 +227,16 @@ def write_csv():
 				order.tax_total,
 				order.total
 			]
-			for product in all_products:
-				if product in order.products:
-					the_order.append(order.products[product]["S"])
-					the_order.append(order.products[product]["M"])
-					the_order.append(order.products[product]["L"])
-					the_order.append(order.products[product]["XL"])
-					the_order.append(order.products[product]["XXL"])
+
+			for product, product_type in all_products.items():
+				if product in order.products:	
+					for key,value in eval(product_type+'.items()'):
+							key_value = order.products[product][key]
+							get_nested_values(the_order,key_value)
 				else:
-					the_order.append("")
-					the_order.append("")
-					the_order.append("")
-					the_order.append("")
-					the_order.append("")
+					key_value = eval(product_type)
+					get_nested_values(the_order,key_value)
+					
 
 			rows.append(the_order)
 		
