@@ -1,8 +1,9 @@
 from selenium import webdriver
 from selenium.webdriver.common.action_chains import ActionChains
 import extensions
-import os,sys,time,pyperclip,signal,string
+import os,sys,time,pyperclip,signal,string,json
 import local
+from copy import deepcopy
 
 driver = webdriver.Chrome()
 action = ActionChains(driver)
@@ -11,7 +12,10 @@ driver.implicitly_wait(3)
 extensions.set_driver(driver,action)
 
 orders = []
+product_totals = {}
 all_products = local.products
+
+used_products = []
 
 size_product = {
 	"S":"",
@@ -21,13 +25,23 @@ size_product = {
 	"XXL":"",
 }
 
-default_product = {
-	" ":"",
+default_product = ""
+
+color_size_product_1 = {
+	"Black": deepcopy(size_product),
+	"Dark Grey": deepcopy(size_product),
+	"Navy": deepcopy(size_product),
+	"Olive Green": deepcopy(size_product),
+	"Light Pink": deepcopy(size_product),
+	"Light Blue": deepcopy(size_product),
+	"Light Grey": deepcopy(size_product),
+	"Sand": deepcopy(size_product),
 }
 
-color_size_product = {
-	"Black": size_product.copy(),
-	"Grey": size_product.copy(),
+color_size_product_2 = {
+	"Black": deepcopy(size_product),
+	"Navy": deepcopy(size_product),
+	"Forest Green": deepcopy(size_product),
 }
 
 def signal_handler(sig, frame):
@@ -41,7 +55,7 @@ def error(e="Unkown",pause=True):
 		fname = os.path.split(exc_tb.tb_frame.f_code.co_filename)[1]
 		print("Error: %s (%s %s)" % (e,fname,exc_tb.tb_lineno))
 	except:
-		pass
+		print("Error: %s" % (e))
 	if pause:
 		input("-- Enter to Quit -- ")
 	driver.quit()
@@ -73,7 +87,9 @@ def run():
 	else:
 		error("Couldn't get order count")
 
+	init_product_totals()
 	get_orders(order_count)
+	get_used_products()
 	write_csv()
 
 def get_orders(count):
@@ -135,6 +151,27 @@ def get_orders(count):
 	except Exception as e:
 			error(e)
 
+def init_product_totals():
+	try:
+		for name in list(all_products.keys()):
+			product_type_name = all_products[name]
+			product_totals[name] = deepcopy(eval(product_type_name))
+
+			if product_type_name == 'default_product':
+				product_totals[name] = 0
+			elif product_type_name is 'size_product':
+				for size in list(product_totals[name].keys()):
+					product_totals[name][size] = 0
+			elif 'color_size_product' in product_type_name:
+				for color,sizes in product_totals[name].items():
+					for size in list(sizes.keys()):
+						product_totals[name][color][size] = 0
+			else:
+				error('Invalid product type specified: '+name)
+	except Exception as e:
+		error(e)
+
+
 def get_products():
 	try:
 		products = {}
@@ -143,24 +180,28 @@ def get_products():
 			name = web_product.find("class","order-details-product__name").text.replace("WCYD ","")
 
 			if name in all_products.keys():
-				product_type = all_products[name]
-				products[name] = eval(product_type+'.copy()')
-				
+				product_type_name = all_products[name]
+				if not name in products:
+					products[name] = deepcopy(eval(product_type_name))
+
 				quantity = web_product.find("class","product-cost__multiplier").text
 				if not quantity: 
 					quantity = '1'
 
-				if product_type == 'default_product':
-					products[name][' '] = quantity
+				if product_type_name is 'default_product':
+					products[name] = quantity
+					product_totals[name] += int(quantity)
 
-				elif product_type == 'size_product':
+				elif product_type_name is 'size_product':
 					size = web_product.find("text~","Size:").up().find("class","product-attribute__value").text
 					products[name][size] = quantity
+					product_totals[name][size] += int(quantity)
 
-				elif product_type == 'color_size_product':
+				elif 'color_size_product' in product_type_name:
 					color = web_product.find("text~","Color:").up().find("class","product-attribute__value").text
 					size = web_product.find("text~","Size:").up().find("class","product-attribute__value").text
 					products[name][color][size] = quantity
+					product_totals[name][color][size] += int(quantity)
 
 				else:
 					error('Invalid product type specified: '+name)
@@ -172,43 +213,104 @@ def get_products():
 	except Exception as e:
 		error(e)
 
-def get_nested_types(rows,value):
-	blank_row = list(map(lambda i: "", range(16)))
+def get_used_products():
+	try:
+		global used_products
+		used_products = deepcopy(product_totals)
+		for name, product in product_totals.items():
+			product_type_name = all_products[name]
 
-	if isinstance(value, dict):
-		product_type = value
-		row = blank_row + product_type.keys()
-		rows.append(row)
+			if product_type_name is 'default_product':
+				if product is 0:
+					del used_products[name]
 
-		for key, value in product_type.items():
-			get_nested_types(rows,value)
+			elif product_type_name is 'size_product':
+				empty = True
+				for size, value in product.items():
+					if value is 0:
+						del used_products[name][size]
+					else:
+						empty = False
+				if empty:
+					del	used_products[name]
 
-def get_nested_values(the_order,key_value):
-	if isinstance(key_value, dict):
-		product_type = key_value
-		for key, value in product_type.items():
-			get_nested_values(the_order,product_type[key])
+			elif 'color_size_product' in product_type_name: 
+				color_empty = True
+				for color, sizes in product.items():
+					size_empty = True
+					for size, value in sizes.items():
+						if value is 0:
+							del used_products[name][color][size]
+						else:
+							size_empty = False
+					if size_empty:
+						del used_products[name][color]
+					else:
+						color_empty = False
+				if color_empty:
+					del used_products[name]
+
+	except Exception as e:
+		error(e)
+
+def letter(i):
+	up = string.ascii_uppercase
+	the_letter = ''
+				
+	mult = 1
+	while (i > mult*26):
+		mult += 1
 	else:
-		the_order.append(key_value)
+		if mult is 1:
+			the_letter = up[i-(mult*26)-1]
+		else:
+			the_letter = up[mult-2]+up[i-(mult*26)-1]
+
+	return the_letter
 
 def write_csv():
 	try:
-		row1 = ["","Info","","","","","","","","","","","Cost","","",""]
-		row2 = ["#","Date","Customer","Email","Phone","Address 1","City","State","Zip","Country","Delivery","Payment","Items","Shipping","Tax","Total"]
-		rows = [row1,row2]
+		blank_row = list(map(lambda i: "", range(16)))
 
-		for product, product_type in all_products.items():
-			list1 = []
-			list2 = []
-			for key,value in eval(product_type+'.items()'):				
-				get_nested_values(list1,value)
-				list2.append(key)
-				get_nested_types(rows,value)
-			list1[0] = product
-			rows[0] += list1
-			rows[1] += list2
+		row1 = ["","Info","","","","","","","","","","","Cost","","",""]
+		row2 = blank_row
+		row3 = ["#","Date","Customer","Email","Phone","Address 1","City","State","Zip","Country","Delivery","Payment","Items","Shipping","Tax","Total"]
+		rows = [row1,row2,row3]
+
+		for product_name in list(used_products.keys()):
+			product_type_name = all_products[product_name]
+
+			lists = [[],[],[]]
+			product_type = used_products[product_name]
+
+			if product_type_name is 'default_product':
+				lists[0].append(product_name)
+
+			elif product_type_name is 'size_product':				
+				for size in list(product_type.keys()): 
+					lists[0].append("")
+					lists[2].append(size)
+				lists[0][0] = product_name
+
+			elif 'color_size_product' in product_type_name:
+				for color,sizes in product_type.items():
+					color_list = []
+					for size in list(sizes.keys()):
+						lists[0].append("")
+						color_list.append("")
+						lists[2].append(size)
+					color_list[0] = color
+					lists[1] += color_list
+
+				lists[0][0] = product_name
+
+			for i, the_list in enumerate(lists):
+				try:
+					rows[i] += the_list
+				except:
+					rows.append(blank_row + the_list)
 		
-		for order in orders:
+		for i, order in enumerate(orders):
 			the_order = [
 				order.number,
 				order.date,
@@ -228,33 +330,56 @@ def write_csv():
 				order.total
 			]
 
-			for product, product_type in all_products.items():
-				if product in order.products:	
-					for key,value in eval(product_type+'.items()'):
-							key_value = order.products[product][key]
-							get_nested_values(the_order,key_value)
-				else:
-					key_value = eval(product_type)
-					get_nested_values(the_order,key_value)
-					
+			for product_name in list(used_products.keys()):
+				product_type_name = all_products[product_name]
+
+				if product_type_name is 'default_product':
+					if product_name in order.products:
+						the_order.append(order.products[product_name])
+					else:
+						the_order.append("")
+
+				elif product_type_name is 'size_product':				
+					for size in list(used_products[product_name].keys()):
+						if product_name in order.products:
+								the_order.append(order.products[product_name][size])
+						else:
+							the_order.append("")
+
+				elif 'color_size_product' in product_type_name:
+					for color,sizes in used_products[product_name].items():
+						for size in list(sizes.keys()):
+							if product_name in order.products:
+								the_order.append(order.products[product_name][color][size])
+							else:
+								the_order.append("")
+
+			row_num = i+4
+			column_let = letter(len(the_order))
+			formula = '=SUM(Q%s:%s%s)' % (row_num,column_let,row_num)
+			the_order += ['',formula]
 
 			rows.append(the_order)
 		
 		rows.append([""])
 
 		totals = []
-		for i,label in enumerate(row2,1):
-			if i == 3:
+		for i,label in enumerate(rows[0],1):
+			if i == 0:
+				totals.append("=A%s-A4" % (len(orders)+3))
+			elif i == 3:
 				totals.append("Totals")
 			elif i <= 12:
 				totals.append("")
-			else:
-				if i > 26:
-					letter = "A"+string.ascii_uppercase[i-27] 
-				else:
-					letter = string.ascii_uppercase[i-1]
-				formula = 'SUM(%s3:%s%s)' % (letter,letter,len(orders)+2)
+			else:				
+				formula = 'SUM(%s4:%s%s)' % (letter(i),letter(i),len(orders)+3)
 				totals.append('=IF(%s<>0,%s,"")' % (formula,formula))
+
+		column_let = letter(len(rows[0]))
+		row_num = len(orders)+5
+
+		formula = '=SUM(Q%s:%s%s)' % (row_num,column_let,row_num)
+		totals += ['',formula]
 				
 				
 		rows.append(totals)
@@ -262,6 +387,10 @@ def write_csv():
 		csv = ""
 		for row in rows:
 			csv += "	".join(row)+"\n"
+
+		for full, sku in local.skus.items():
+			csv = csv.replace(full,sku)
+
 		pyperclip.copy(csv)
 	except Exception as e:
 			error(e)
